@@ -47,7 +47,7 @@ model.minimize(makespan)  # minimalizacja makespan = typowy cel job shop  [oai_c
 solver = cp_model.CpSolver()
 solver.solve(model)
 
-# 9) Wynik, który “karmi” biznes: finalna kolejność per maszyna (do Gantta/raportu)
+# 9) Wynik, który "karmi" biznes: finalna kolejność per maszyna (do Gantta/raportu), który “karmi” biznes: finalna kolejność per maszyna (do Gantta/raportu)
 schedule = {m: [] for m in range(len(machines))}  # tu zbierzesz: (start, end, job, op)
 
 for j, job in enumerate(jobs):
