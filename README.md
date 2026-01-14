@@ -3,7 +3,7 @@
 Prosty proof-of-concept optymalizacji harmonogramowania zadań produkcyjnych (Job Shop Scheduling) z wykorzystaniem biblioteki **Google OR-Tools**.
 
 Przykład działania:
-![Gantt Chart Example](./image.png)
+![Gantt Chart Example](./easy_case.png)
 ---
 
 ## 📋 Opis problemu
@@ -121,8 +121,17 @@ makespan = 10  # Całkowity czas produkcji (jednostki czasu)
 | **Wiele zasobów na operację** | Rozszerzenie `by_machine` o operatorów/narzędzia |
 | **Terminy dostaw** | Ograniczenia `end <= deadline` dla jobów |
 | **Minimalizacja WIP** | Alternatywna funkcja celu (flow time) |
+| **Terminy dostaw** | Ograniczenia `end <= deadline` dla jobów |
+| **Minimalizacja WIP** | Alternatywna funkcja celu (flow time) |
 
 ---
+## Optymalizacja i wydajność
+
+Przykład działania przy 17 różnych jobach i 6 maszynach:
+
+Czas wykonania: **0.03 sekundy**
+
+![Gantt Chart Example hard](./hard_case.png)
 
 ## 🚀 Uruchomienie
 

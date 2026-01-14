@@ -1,37 +1,15 @@
 from ortools.sat.python import cp_model  # import solvera CP-SAT z OR-Tools
-import time  # do pomiaru czasu wykonania algorytmu
 
 # 1) Definiujesz zasoby (gniazda/maszyny)
-machines = ["M1", "M2", "M3", "M4", "M5", "M6"]  # 6 maszyn w fabryce
+machines = ["M1", "M2", "M3"]  # nazwy tylko do czytelnego wydruku
 
 # 2) Definiujesz joby: każdy job ma własny routing (kolejność maszyn)
 #    Format: (machine_id, czas_trwania)
-#    Każdy job to produkt przechodzący przez różne etapy obróbki
 jobs = [
-    # Job 0-4: Produkty typu A (routing przez M1 → M2 → M3 → M4 → M5)
-    [(0, 3), (1, 2), (2, 4), (3, 2), (4, 3)],  # Job 0
-    [(0, 2), (1, 3), (2, 2), (3, 4), (4, 2)],  # Job 1
-    [(0, 4), (1, 2), (2, 3), (3, 2), (4, 4)],  # Job 2
-    [(0, 3), (1, 4), (2, 2), (3, 3), (4, 2)],  # Job 3
-    [(0, 2), (1, 2), (2, 5), (3, 2), (4, 3)],  # Job 4
-    
-    # Job 5-9: Produkty typu B (routing przez M2 → M4 → M6 → M1 → M3)
-    [(1, 3), (3, 2), (5, 4), (0, 2), (2, 3)],  # Job 5
-    [(1, 2), (3, 3), (5, 2), (0, 4), (2, 2)],  # Job 6
-    [(1, 4), (3, 2), (5, 3), (0, 2), (2, 4)],  # Job 7
-    [(1, 3), (3, 4), (5, 2), (0, 3), (2, 2)],  # Job 8
-    [(1, 2), (3, 2), (5, 5), (0, 2), (2, 3)],  # Job 9
-    
-    # Job 10-14: Produkty typu C (różne routingi)
-    [(2, 3), (4, 2), (5, 4), (1, 2), (3, 3), (0, 2)],  # Job 10: 6 operacji
-    [(5, 2), (3, 3), (1, 2), (4, 4)],                   # Job 11: 4 operacje
-    [(0, 4), (2, 2), (4, 3), (5, 2), (1, 4)],          # Job 12: 5 operacji
-    [(3, 3), (1, 4), (5, 2), (2, 3), (0, 2)],          # Job 13: 5 operacji
-    [(4, 2), (2, 2), (0, 5), (3, 2), (5, 3), (1, 2)],  # Job 14: 6 operacji
+    [(0, 3), (1, 2), (2, 2)],  # Job 0: M1 -> M2 -> M3
+    [(1, 2), (2, 4)],          # Job 1: M2 -> M3
+    [(0, 2), (2, 1), (1, 3)],  # Job 2: M1 -> M3 -> M2 (inna ścieżka)
 ]
-
-# === START POMIARU CZASU ===
-start_time = time.perf_counter()  # precyzyjny timer do pomiaru wydajności
 
 model = cp_model.CpModel()  # tworzysz model optymalizacyjny
 
@@ -67,26 +45,9 @@ model.minimize(makespan)  # minimalizacja makespan = typowy cel job shop  [oai_c
 
 # 8) Rozwiązanie
 solver = cp_model.CpSolver()
-status = solver.solve(model)
+solver.solve(model)
 
-# === KONIEC POMIARU CZASU ===
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-
-# Wyświetl statystyki rozwiązania
-status_name = solver.status_name(status)
-print(f"\n{'='*50}")
-print(f"STATYSTYKI ROZWIĄZANIA")
-print(f"{'='*50}")
-print(f"Status: {status_name}")
-print(f"Czas obliczeń: {elapsed_time:.4f} sekund")
-print(f"Makespan (czas całkowity): {solver.value(makespan)} jednostek")
-print(f"Liczba jobów: {len(jobs)}")
-print(f"Liczba maszyn: {len(machines)}")
-print(f"Liczba operacji: {sum(len(job) for job in jobs)}")
-print(f"{'='*50}\n")
-
-# 9) Wynik, który “karmi” biznes: finalna kolejność per maszyna (do Gantta/raportu)
+# 9) Wynik, który "karmi" biznes: finalna kolejność per maszyna (do Gantta/raportu), który “karmi” biznes: finalna kolejność per maszyna (do Gantta/raportu)
 schedule = {m: [] for m in range(len(machines))}  # tu zbierzesz: (start, end, job, op)
 
 for j, job in enumerate(jobs):
